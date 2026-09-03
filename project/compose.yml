@@ -1,6 +1,8 @@
 services:
   app:
     build: .
+    volumes:
+      - ./images:/project/images
 
   nginx:
     image: nginx:latest
@@ -9,3 +11,4 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
       - ./static:/web:ro
+      - ./images:/project/images:ro

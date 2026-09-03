@@ -68,7 +68,7 @@ class Handler(BaseHTTPRequestHandler):
         # file_upload.write(data)
         # file_upload.close()
 
-        with open("./images", "wb") as file_upload:
+        with open("./images/example.jpg", "wb") as file_upload:
             file_upload.write(data)
 
         self.send_response(200)
