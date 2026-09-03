@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./images/css/reset.css">
-    <link rel="stylesheet" href="./images/css/style.css">
+    <link rel="stylesheet" href="./index_data/css/reset.css">
+    <link rel="stylesheet" href="./index_data/css/style.css">
     <title>SmartUploader</title>
 </head>
 <body>
@@ -13,7 +13,7 @@
         <p class="uploadDescription">Upload selfies, memes, or any fun pictures here.</p>
         <div>
             <div class="uploadIcon">
-                <img src="./images/img/icon/feather_upload-cloud.png" alt="icon">
+                <img src="./index_data/img/icon/feather_upload-cloud.png" alt="icon">
             </div>
             <p class="uploadDescription">Select a file</p>
             <p class="uploadDescription">Only support .jpg, .png and gif. <br>
@@ -22,8 +22,8 @@
         <div>
             <div>
                 <h2 class="uploadTitle">Current Upload</h2>
-               <form action="/upload" method="POST" enctype="multipart/form-data" class="uploadLabel">
-                    <input type="file" placeholder="input image" class="uploadInput">
+               <form action="/upload" method="POST" class="uploadLabel" enctype="multipart/form-data">
+                    <input type="file" name="file" class="uploadInput">
                     <input type="submit" value="Upload" class="uploadCopy">
                 </form>
             </div>
