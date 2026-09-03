@@ -1,13 +1,13 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
-
 import os
 import mimetypes
 
 # пошук, вичитування та завантаження index.html
-
-file = open("./static/index.html", "r")
-html = file.read()
-file.close()
+# file = open("static/index.html", "r")
+# html = file.read()
+# file.close()
+file = None
+file_upload = None
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -20,7 +20,7 @@ class Handler(BaseHTTPRequestHandler):
         if os.path.isfile(file_path):
             with open(file_path, "rb") as file:
                 content = file.read()
-
+                
             content_type = mimetypes.guess_type(file_path)[0]
 
             if content_type is None:
@@ -38,7 +38,7 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b"404 - File not found")
   
-
+  
     def do_POST(self):
 
         length = int(self.headers.get("Content-Length"))
@@ -53,17 +53,56 @@ class Handler(BaseHTTPRequestHandler):
         end = body.find(b"\r\n--" + boundary, start)
 
         data = body[start:end]
-        file_download = open("./static/example.jpg", "wb")
-        file_download.write(data)
-        file_download.close()
 
-        self.send_response(201)
+        # print("BODY SIZE:", len(body), flush=True)
+        # print("FILE SIZE:", len(data), flush=True)
+
+        # print("START:", start, flush=True)
+        # print("END:", end, flush=True)
+        # print(body[end:end + 200], flush=True)
+        # print("BOUNDARY:", boundary, flush=True)
+        # print("DATA SIZE:", len(data), flush=True)
+        # print(body[:500], flush=True)
+
+        # file_upload = open("./static", "wb")
+        # file_upload.write(data)
+        # file_upload.close()
+
+        with open("./images", "wb") as file_upload:
+            file_upload.write(data)
+
+        self.send_response(200)
         self.send_header("Content-Type", "text/plain")
         self.end_headers()
         
         self.wfile.write(b"POST OK!")
-       
 
+
+         
+    # def extract_file_data(handler):
+    #     length = int(handler.headers.get("Content-Length"))
+    #     body = handler.rfile.read(length)
+    #     boundary = handler.headers["Content-Type"].split("boundary=")[-1].encode()
+    #     start = body.find(b"\r\n\r\n") + 4
+    #     end = body.find(b"\r\n--" + boundary, start)
+    #     data = body[start:end]
+    # return data
+
+
+#  def extract_file_data(handler):
+#  length = int(handler.headers.get("Content-Length"))
+#  body = handler.rfile.read(length)
+#  boundary = handler.headers["Content-Type"].split("boundary=")[-1].encode()
+#  start = body.find(b"\r\n\r\n") + 4
+#  end = body.find(b"\r\n--" + boundary, start)
+#  data = body[start:end]
+
+#  upload_name = re.search(
+#  rb'filename="([^"]+)"',
+#  body
+#  ).group(1).decode()
+
+#  return data, upload_name
 
 
         
