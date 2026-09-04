@@ -19,6 +19,8 @@ class Handler(BaseHTTPRequestHandler):
         if parsed_url.path == "/":
             if "uploaded" in params:
                file_path = "./static/uploaded.html"
+            elif "error" in params:
+                file_path = "./static/error.html"
             else: 
                 file_path = "./static/index.html"
         else:
@@ -49,9 +51,17 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
 
         length = int(self.headers.get("Content-Length"))
+        
         body = self.rfile.read(length)
         # flush=True - вивід відразу, щоб не було буферізації
-        # print(body, flush=True)
+        # print("Розмір:", len(body), flush=True)
+
+        size_photo = len(body)
+        if size_photo > 5000000:
+            self.send_response(303)
+            self.send_header("Location", "/?error=1")
+            self.end_headers()
+            return
 
         # код опрацювання завантаження файлу
         boundary = self.headers["Content-Type"].split("boundary=")[-1].encode()
@@ -64,13 +74,21 @@ class Handler(BaseHTTPRequestHandler):
 
         # отримання імені файлу
         upload_name = re.search(
-            rb'filename="([^"]+)"',
-            body).group(1).decode()
+            rb'filename="([^"]+)"', body).group(1).decode()
         # print(upload_name, flush=True)
 
         # отримання розширення файлу
-        file_name = uuid.uuid4().hex + "." + upload_name.split(".")[-1]
+        expansion_name = str(upload_name.split(".")[-1])
 
+        # перевірка на розширення
+        if expansion_name in {"jpg", "jpeg", "png", "gif"}:
+            file_name = uuid.uuid4().hex + "." + expansion_name
+        else:
+            self.send_response(303)
+            self.send_header("Location", "/?error=1")
+            self.end_headers()
+
+                
         # запис унікальної назви файлу
         with open(f"./images/{file_name}", "wb") as file_upload:
             file_upload.write(data)
