@@ -1,8 +1,9 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import os
 import mimetypes
-from time import sleep
 from urllib.parse import urlparse, parse_qs
+import uuid
+import re
 
 # пошук, вичитування та завантаження index.html
 # file = open("static/index.html", "r")
@@ -60,42 +61,24 @@ class Handler(BaseHTTPRequestHandler):
 
         data = body[start:end]
 
-        with open("./images/example.jpg", "wb") as file_upload:
+
+        # отримання імені файлу
+        upload_name = re.search(
+            rb'filename="([^"]+)"',
+            body).group(1).decode()
+        # print(upload_name, flush=True)
+
+        # отримання розширення файлу
+        file_name = uuid.uuid4().hex + "." + upload_name.split(".")[-1]
+
+        # запис унікальної назви файлу
+        with open(f"./images/{file_name}", "wb") as file_upload:
             file_upload.write(data)
 
         self.send_response(303)
         self.send_header("Location", "/?uploaded=1")
         self.end_headers()
 
-         
-    # def extract_file_data(handler):
-    #     length = int(handler.headers.get("Content-Length"))
-    #     body = handler.rfile.read(length)
-    #     boundary = handler.headers["Content-Type"].split("boundary=")[-1].encode()
-    #     start = body.find(b"\r\n\r\n") + 4
-    #     end = body.find(b"\r\n--" + boundary, start)
-    #     data = body[start:end]
-    # return data
-
-
-    #  def extract_file_data(handler):
-    #  length = int(handler.headers.get("Content-Length"))
-    #  body = handler.rfile.read(length)
-    #  boundary = handler.headers["Content-Type"].split("boundary=")[-1].encode()
-    #  start = body.find(b"\r\n\r\n") + 4
-    #  end = body.find(b"\r\n--" + boundary, start)
-    #  data = body[start:end]
-
-    #  upload_name = re.search(
-    #  rb'filename="([^"]+)"',
-    #  body
-    #  ).group(1).decode()
-
-    #  return data, upload_name
-
-
-        
-
-
+   
 server = HTTPServer(("0.0.0.0", 8000), Handler)
 server.serve_forever()
