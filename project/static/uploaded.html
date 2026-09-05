@@ -11,6 +11,16 @@
     <section class="uploadIntro">
         <div>
             <h2 class="uploadTitle">File uploaded!</h2>
+            <p id="file-path"></p>
+
+            <script>
+                const params = new URLSearchParams(window.location.search);
+                const filePath = params.get("file");
+                // const fileUrl = filePath.replace("./", "/");
+                // const fileUrl = `http://localhost:8080/${filePath.replace("./", "")}`
+ 
+                document.getElementById("file-path").textContent = filePath;
+</script>
             <form action="/" method="GET">
                 <button type="submit" class="uploadCopy">OK!</button>
             </form>
@@ -18,3 +28,5 @@
     </section>
 </body>
 </html>
+
+

@@ -11,6 +11,7 @@ import re
 # file.close()
 file = None
 file_upload = None
+file_local_path = None
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -87,15 +88,31 @@ class Handler(BaseHTTPRequestHandler):
             self.send_response(303)
             self.send_header("Location", "/?error=1")
             self.end_headers()
-
+        
+        path_local = f"./images/{file_name}"
                 
         # запис унікальної назви файлу
-        with open(f"./images/{file_name}", "wb") as file_upload:
-            file_upload.write(data)
+        # with open(f"{path_local}", "wb") as file_upload:
+        #     file_upload.write(data)
 
+
+        f = open(path_local, "wb")
+        f.write(data)
+        f.close()
+
+        # print(f"f", f, flush=True)
+
+        
         self.send_response(303)
-        self.send_header("Location", "/?uploaded=1")
+        # self.send_header("Location", f"/?uploaded=1")
+        self.send_header("Location", f"/?uploaded=1&file={path_local}")
         self.end_headers()
+  
+        # self.send_response(200)
+        # self.send_header("Content-Type", "text/plain")
+        # self.end_headers()
+        
+        # self.wfile.write(f"http://locolhost:8080/{path_local}".encode())
 
    
 server = HTTPServer(("0.0.0.0", 8000), Handler)
