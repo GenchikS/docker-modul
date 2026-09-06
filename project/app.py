@@ -102,16 +102,15 @@ class Handler(BaseHTTPRequestHandler):
 
         # print(f"f", f, flush=True)
 
+        path_local_http = path_local.split(".")[1]
         
         self.send_response(303)
-        # self.send_header("Location", f"/?uploaded=1")
-        self.send_header("Location", f"/?uploaded=1&file={path_local}")
+        self.send_header("Location", f"/?uploaded=1&file={path_local_http}")
         self.end_headers()
   
         # self.send_response(200)
         # self.send_header("Content-Type", "text/plain")
         # self.end_headers()
-        
         # self.wfile.write(f"http://locolhost:8080/{path_local}".encode())
 
    
