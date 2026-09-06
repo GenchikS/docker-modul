@@ -72,11 +72,27 @@ class Handler(BaseHTTPRequestHandler):
 
         data = body[start:end]
 
+        upload_match = re.search(
+            rb'filename="([^"]*)"', body
+        )
+
+            # файл не знайдено
+        if not upload_match:
+            self.send_response(303)
+            self.send_header("Location", "/?error=1")
+            self.end_headers()
+            return
 
         # отримання імені файлу
-        upload_name = re.search(
-            rb'filename="([^"]+)"', body).group(1).decode()
-        # print(upload_name, flush=True)
+        upload_name = upload_match.group(1).decode()
+
+        # якщо відсутня назва файлу
+        if not upload_name:
+            self.send_response(303)
+            self.send_header("Location", "/?error=1")
+            self.end_headers()
+            return
+        
 
         # отримання розширення файлу
         expansion_name = str(upload_name.split(".")[-1])
@@ -90,7 +106,7 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
         
         path_local = f"./images/{file_name}"
-                
+        
         # запис унікальної назви файлу
         # with open(f"{path_local}", "wb") as file_upload:
         #     file_upload.write(data)
@@ -102,8 +118,8 @@ class Handler(BaseHTTPRequestHandler):
 
         # print(f"f", f, flush=True)
 
-        path_local_http = path_local.split(".")[1]
-        
+        path_local_http = path_local[1:]
+               
         self.send_response(303)
         self.send_header("Location", f"/?uploaded=1&file={path_local_http}")
         self.end_headers()
@@ -114,5 +130,5 @@ class Handler(BaseHTTPRequestHandler):
         # self.wfile.write(f"http://locolhost:8080/{path_local}".encode())
 
    
-server = HTTPServer(("0.0.0.0", 8000), Handler)
+server = HTTPServer(("0.0.0.0", 8080), Handler)
 server.serve_forever()

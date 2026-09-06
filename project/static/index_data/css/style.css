@@ -75,10 +75,19 @@ body {
     color: black;
 }
 
+.titleIndex{
+    font-size: 16px;
+    width: 700px;
+}
+
 .uploadTitle {
     font-size: 16px;
     width: 700px;
+    color: green;
+}
 
+.uploadText{
+    margin-top: 24px;
 }
 
 .uploadDescription {
@@ -213,9 +222,9 @@ body {
 
 }
 
-.uploadCopy {
-    width: 60px;
-    height: 30px;
+.uploadCopyIndex {
+    width: 100px;
+    height: 40px;
     border-radius: 12px;
     border: none;
     background-color: rgb(0, 96, 255);
@@ -224,6 +233,17 @@ body {
     cursor: pointer;
 }
 
+.uploadCopy {
+    width: 100px;
+    height: 40px;
+    border-radius: 12px;
+    border: none;
+    background-color: rgb(0, 96, 255);
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 24px;
+}
 
 /* Container for the entire table */
 .file-list-container {
