@@ -4,6 +4,7 @@ import mimetypes
 from urllib.parse import urlparse, parse_qs
 import uuid
 import re
+import logging
 
 # пошук, вичитування та завантаження index.html
 # file = open("static/index.html", "r")
@@ -13,16 +14,29 @@ file = None
 file_upload = None
 file_local_path = None
 
+logging.basicConfig(
+    filename="/project/logs/app.log",
+    level=logging.INFO,
+    format="[%(asctime)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+
+logger = logging.getLogger(__name__)
+logger.info("Сервер запущено.")
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed_url = urlparse(self.path)
         params = parse_qs(parsed_url.query)
         if parsed_url.path == "/":
             if "uploaded" in params:
-               file_path = "./static/uploaded.html"
+                logger.info("Успіх: перехід на сторінку завантаження виконано!")
+                file_path = "./static/uploaded.html"
             elif "error" in params:
+                logger.error("Помилка: недопустимий файл!")
                 file_path = "./static/error.html"
             else: 
+                logger.info("Успіх: перехід на головну сторінку виконано!")
                 file_path = "./static/index.html"
         else:
             file_path = "./static" + self.path
@@ -49,8 +63,8 @@ class Handler(BaseHTTPRequestHandler):
             self.wfile.write(b"404 - File not found")
   
   
-    def do_POST(self):
 
+    def do_POST(self):
         length = int(self.headers.get("Content-Length"))
         
         body = self.rfile.read(length)
@@ -59,6 +73,7 @@ class Handler(BaseHTTPRequestHandler):
 
         size_photo = len(body)
         if size_photo > 5000000:
+            logger.error("Помилка: недопустимо великий розмір файлу!")
             self.send_response(303)
             self.send_header("Location", "/?error=1")
             self.end_headers()
@@ -78,6 +93,7 @@ class Handler(BaseHTTPRequestHandler):
 
             # файл не знайдено
         if not upload_match:
+            logger.error("Помилка: файл не обрано!")
             self.send_response(303)
             self.send_header("Location", "/?error=1")
             self.end_headers()
@@ -88,6 +104,7 @@ class Handler(BaseHTTPRequestHandler):
 
         # якщо відсутня назва файлу
         if not upload_name:
+            logger.error("Помилка: файл не обрано!")
             self.send_response(303)
             self.send_header("Location", "/?error=1")
             self.end_headers()
@@ -101,9 +118,11 @@ class Handler(BaseHTTPRequestHandler):
         if expansion_name in {"jpg", "jpeg", "png", "gif"}:
             file_name = uuid.uuid4().hex + "." + expansion_name
         else:
+            logger.error("Помилка: недопустиме розширення файлу %s.", expansion_name)
             self.send_response(303)
             self.send_header("Location", "/?error=1")
             self.end_headers()
+            return
         
         path_local = f"./images/{file_name}"
         
@@ -114,14 +133,17 @@ class Handler(BaseHTTPRequestHandler):
 
         f = open(path_local, "wb")
         f.write(data)
+        logger.info("Успіх: зображення %s завантажено. Розмір: %d байт.", upload_name, len(data))
         f.close()
 
         # print(f"f", f, flush=True)
 
         path_local_http = path_local[1:]
-               
+        
+        
         self.send_response(303)
         self.send_header("Location", f"/?uploaded=1&file={path_local_http}")
+        logger.info("Успіх: посилання на файл згенеровано!")
         self.end_headers()
   
         # self.send_response(200)
