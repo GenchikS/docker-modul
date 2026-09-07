@@ -153,10 +153,10 @@ class Handler(BaseHTTPRequestHandler):
             logger.info("Успіх: посилання на файл згенеровано!")
             self.end_headers()
     
-            self.send_response(200)
-            self.send_header("Content-Type", "text/plain")
-            self.end_headers()
-            self.wfile.write(f"http://locolhost:8080/{path_local}".encode())
+            # self.send_response(200)
+            # self.send_header("Content-Type", "text/plain")
+            # self.end_headers()
+            # self.wfile.write(f"http://locolhost:8080/{path_local}".encode())
         
         except Exception as e:
             logger.exception(f"Помилка: {e}")
