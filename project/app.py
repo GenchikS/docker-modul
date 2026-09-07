@@ -72,11 +72,9 @@ class Handler(BaseHTTPRequestHandler):
             self.wfile.write(b"500 - Internal Server Error")
   
   
-
     def do_POST(self):
         try:
             length = int(self.headers.get("Content-Length"))
-        
             body = self.rfile.read(length)
             # flush=True - вивід відразу, щоб не було буферізації
             # print("Розмір:", len(body), flush=True)
@@ -121,7 +119,6 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 return
         
-
             # отримання розширення файлу
             expansion_name = str(upload_name.split(".")[-1])
 
