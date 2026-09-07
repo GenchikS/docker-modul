@@ -42,6 +42,7 @@ class Handler(BaseHTTPRequestHandler):
             else:
                 file_path = "./static" + self.path
 
+            # завантаження css
             if os.path.isfile(file_path):
                 with open(file_path, "rb") as file:
                     content = file.read()
@@ -80,6 +81,7 @@ class Handler(BaseHTTPRequestHandler):
             # flush=True - вивід відразу, щоб не було буферізації
             # print("Розмір:", len(body), flush=True)
 
+            # перевірка на розмір файлу (5Мб)
             size_photo = len(body)
             if size_photo > 5000000:
                 logger.error("Помилка: недопустимо великий розмір файлу!")
@@ -100,7 +102,7 @@ class Handler(BaseHTTPRequestHandler):
                 rb'filename="([^"]*)"', body
                 )
 
-                # файл не знайдено
+            # файл не знайдено
             if not upload_match:
                 logger.error("Помилка: файл не обрано!")
                 self.send_response(303)
@@ -134,22 +136,21 @@ class Handler(BaseHTTPRequestHandler):
                 return
             
             path_local = f"./images/{file_name}"
+            # створення шляху для передачі в html
+            path_local_http = path_local[1:]
             
             # запис унікальної назви файлу
             # with open(f"{path_local}", "wb") as file_upload:
             #     file_upload.write(data)
 
-
+            # завантаження фото
             f = open(path_local, "wb")
             f.write(data)
             logger.info("Успіх: зображення %s завантажено. Розмір: %d байт.", upload_name, len(data))
             f.close()
-
             # print(f"f", f, flush=True)
 
-            path_local_http = path_local[1:]
-            
-            
+            # передача шляху в html, для відображення
             self.send_response(303)
             self.send_header("Location", f"/?uploaded=1&file={path_local_http}")
             logger.info("Успіх: посилання на файл згенеровано!")
@@ -168,6 +169,5 @@ class Handler(BaseHTTPRequestHandler):
             self.wfile.write(b"500 - Internal Server Error")
 
 
-   
 server = HTTPServer(("0.0.0.0", 8080), Handler)
 server.serve_forever()
