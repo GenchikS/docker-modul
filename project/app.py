@@ -22,6 +22,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
 logger.info("Сервер запущено.")
 
 class Handler(BaseHTTPRequestHandler):
